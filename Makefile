@@ -46,7 +46,7 @@ stop-optimized:
 # Integration Test
 #
 
-integartion-test:
+integration-test:
 	make run-optimized || true
 	if [ $(curl localhost:8080?name=Simon) != "Hello, Simon" ]; then echo "Failure" ; exit 1 ; else echo "success" ; exit 0 ; fi
 	make stop-optimized
