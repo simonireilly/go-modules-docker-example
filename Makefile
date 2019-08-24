@@ -11,7 +11,7 @@ build:
 	docker build -t go-docker -f Dockerfile .
 
 run:
-	docker run -d -p 8080:8080 --name ${DOCKER_CONTAINER_NAME} go-docker
+	docker run -d -p 8080:8080 --name ${DOCKER_CONTAINER_NAME} --rm go-docker
 
 stop:
 	docker container stop ${DOCKER_CONTAINER_NAME}
@@ -24,7 +24,7 @@ build-volume:
 	docker build -t go-docker-volume -f Dockerfile.volume .
 
 run-volume:
-	docker run -d -p 8080:8080 -v ${shell pwd}/logs/go-docker:/app/logs --name ${DOCKER_CONTAINER_VOLUME_NAME} go-docker-volume
+	docker run -d -p 8080:8080 -v ${shell pwd}/logs/go-docker:/app/logs --name ${DOCKER_CONTAINER_VOLUME_NAME} --rm go-docker-volume
 
 stop-volume:
 	docker container stop ${DOCKER_CONTAINER_VOLUME_NAME}
@@ -37,7 +37,16 @@ build-optimized:
 	docker build -t go-docker-optimized -f Dockerfile.multistage .
 
 run-optimized:
-	docker run -d -p 8080:8080 --name ${DOCKER_CONTAINER_OPTIMIZED_NAME} go-docker-optimized
+	docker run -d -p 8080:8080 --name ${DOCKER_CONTAINER_OPTIMIZED_NAME} --rm go-docker-optimized
 
 stop-optimized:
 	docker container stop ${DOCKER_CONTAINER_OPTIMIZED_NAME}
+
+#
+# Integration Test
+#
+
+integration-test:
+	make run-optimized || true
+	if [ "$(shell curl localhost:8080?name=Simon)" == "Hello, Simon" ]; then echo "Success" ; exit 0 ; else echo "Failure" ; exit 1 ; fi
+	make stop-optimized

@@ -1,0 +1,17 @@
+name: Docker build and integration test
+
+on: [push]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build the Docker image
+      run: make build-optimized
+
+    - name: Integration Testing
+      run: make integration-test
